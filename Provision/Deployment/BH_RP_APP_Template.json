@@ -40,7 +40,10 @@
         "BH_Name": "BASTION",
         "BH_IP": "[concat(variables('BH_Name'),'-PublicIP')]",
         "BH_Nic": "[concat(variables('BH_Name'),'-NetworkInterface')]",
-        "BH_ASG": "[concat(variables('BH_Name'),'-ASG')]"
+        "BH_ASG": "[concat(variables('BH_Name'),'-ASG')]",
+        "Big_NSG": "BIG-nsg",
+        "Big_VNet": "BIG-VirtualNetwork",
+        "Big_Subnet": "[concat(variables('Big_VNet'),'-Subnet')]"
     },
     "resources": [
     //Bastion-PublicIP
@@ -95,7 +98,7 @@
     },
     //NSG
     {
-        "name": "BIG-nsg",
+        "name": "[variables('Big_NSG')]",
         "type": "Microsoft.Network/networkSecurityGroups",
         "apiVersion": "2023-04-01",
         "location": "[variables('location')]",
@@ -196,15 +199,15 @@
     },
     //VirtualNetwork and Subnet
     {
-        "name": "BIG-VirtualNetwork",
+        "name": "[variables('Big_VNet')]",
         "type": "Microsoft.Network/virtualNetworks",
         "apiVersion": "2023-04-01",
         "location": "[variables('location')]",
         "dependsOn": [
-            "[resourceId('Microsoft.Network/networkSecurityGroups', 'BIG-nsg')]"
+            "[resourceId('Microsoft.Network/networkSecurityGroups', variables('Big_NSG'))]"
         ],
         "tags": {
-            "displayName": "BIG-VirtualNetwork"
+            "displayName": "[variables('Big_VNet')]"
         },
         "properties": {
             "addressSpace": {
@@ -214,11 +217,11 @@
             },
             "subnets": [
                 {
-                    "name": "BIG-VirtualNetwork-Subnet",
+                    "name": "[variables('Big_Subnet')]",
                     "properties": {
                         "addressPrefix": "10.0.0.0/24",
                         "networkSecurityGroup": {
-                            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'BIG-nsg')]"
+                            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('Big_NSG'))]"
                         }
                     }
                 }
@@ -233,7 +236,7 @@
         "location": "[variables('location')]", 
         "dependsOn": [
             "[resourceId('Microsoft.Network/publicIPAddresses', variables('BH_IP'))]",
-            "[resourceId('Microsoft.Network/virtualNetworks', 'BIG-VirtualNetwork')]",
+            "[resourceId('Microsoft.Network/virtualNetworks', variables('Big_VNet'))]",
             "[resourceId('Microsoft.Network/applicationSecurityGroups', variables('BH_ASG'))]"
         ],
         "tags": {
@@ -255,7 +258,7 @@
                             "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('BH_IP'))]"
                         },
                         "subnet": {
-                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'BIG-VirtualNetwork', 'BIG-VirtualNetwork-Subnet')]"
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('Big_VNet'), variables('Big_Subnet'))]"
                         }
                     }
                 }
@@ -270,7 +273,7 @@
         "location": "[variables('location')]", 
         "dependsOn": [
             "[resourceId('Microsoft.Network/publicIPAddresses', variables('RP_IP'))]",
-            "[resourceId('Microsoft.Network/virtualNetworks', 'BIG-VirtualNetwork')]",
+            "[resourceId('Microsoft.Network/virtualNetworks', variables('Big_VNet'))]",
             "[resourceId('Microsoft.Network/applicationSecurityGroups', variables('RP_ASG'))]"
         ],
         "tags": {
@@ -292,7 +295,7 @@
                             "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('RP_IP'))]"
                         },
                         "subnet": {
-                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'BIG-VirtualNetwork', 'BIG-VirtualNetwork-Subnet')]"
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('Big_VNet'), variables('Big_Subnet'))]"
                         }
                     }
                 }
@@ -306,7 +309,7 @@
         "apiVersion": "2023-04-01",
         "location": "[variables('location')]", 
         "dependsOn": [
-            "[resourceId('Microsoft.Network/virtualNetworks', 'BIG-VirtualNetwork')]",
+            "[resourceId('Microsoft.Network/virtualNetworks', variables('Big_VNet'))]",
             "[resourceId('Microsoft.Network/applicationSecurityGroups', variables('APP_ASG'))]"
         ],
         "tags": {
@@ -325,7 +328,7 @@
                             }
                         ],
                         "subnet": {
-                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'BIG-VirtualNetwork', 'BIG-VirtualNetwork-Subnet')]"
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('Big_VNet'), variables('Big_Subnet'))]"
                         }
                     }
                 }
