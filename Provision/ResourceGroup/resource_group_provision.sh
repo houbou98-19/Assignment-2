@@ -12,8 +12,6 @@ else
     resource_group="$1"
 fi
 
-#echo "Creating resource group: $resource_group"
-
 # Create a resource group
 response=$(az group create --location swedencentral --name $resource_group)
 

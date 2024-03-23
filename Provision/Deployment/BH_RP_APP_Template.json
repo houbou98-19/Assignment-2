@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "password":{
-            "type": "secureString",
-            "metadata": {
-                "description": "Password for the Virtual Machine."
-            }
-        },
         "nginxCustomData": {
             "type": "string",
             "metadata": {
@@ -354,7 +348,6 @@
             "osProfile": {
                 "computerName": "[variables('BH_Name')]",
                 "adminUsername": "azureuser",
-                "adminPassword": "[parameters('password')]",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": true,
                         "ssh": {
@@ -408,7 +401,6 @@
             "osProfile": {
                 "computerName": "[variables('RP_Name')]",
                 "adminUsername": "azureuser",
-                "adminPassword": "[parameters('password')]",
                 "customData":"[base64(parameters('nginxCustomData'))]",
                 "linuxConfiguration": {
                     "disablePasswordAuthentication": true,
@@ -463,7 +455,6 @@
             "osProfile": {
                 "computerName": "[variables('App_Name')]",
                 "adminUsername": "azureuser",
-                "adminPassword": "[parameters('password')]",
                 "customData":"[base64(parameters('appCustomData'))]",
                 "linuxConfiguration": {
                     "disablePasswordAuthentication": true,

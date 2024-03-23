@@ -14,6 +14,6 @@ gh workflow run cicd.yaml --repo $gh_user/$app_name --ref master
 
 echo "APP IP: $public_ip"
 
-
+dotnet run watch
 #run command through bastionhost
 #./Config/send_command_bastion.sh $public_ip "ls"
